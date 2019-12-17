@@ -1,2 +1,17 @@
-# perhamm_infra
-perhamm Infra repository
+# Выполнено ДЗ №2
+
+ - [ ] main task
+
+## В процессе сделано:
+ - Добавлен хук pre-commit
+ - Добавлен шаблон для последующих PR в GitHub
+ - Репозиторий подключен к тестам в Travis
+
+## Как запустить проект:
+ - Запуск не требуется
+
+## Как проверить работоспособность:
+ - В канале #anton_voskresenskij присутствуют сообщения о успешных билдах
+
+## PR checklist
+ - [ ] Pull request Label set to play-travis
