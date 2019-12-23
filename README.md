@@ -1,3 +1,42 @@
+# Выполнено ДЗ №4
+
+ - [ ] main task - Задеплоить тестовое приложение,запустить и проверить его работу.
+ - [ ] additional tasks - Написать скрипты deploy.sh, install_mongodb.sh и install_ruby.sh. Написать startup script который будет запускаться при создании инстанса и полностью деплоить и запускать приложение. Добавить правило файрвола через gcloud. 
+
+## В процессе сделано:
+ - Коммандой 
+```
+gcloud compute firewall-rules create default-puma-server  --allow tcp:9292 --target-tags=puma-server --source-ranges=0.0.0.0/0
+```
+добавил правило файрволла для нашего тестовго приложения.
+ - Коммандой 
+```
+gcloud compute instances create reddit-app  --boot-disk-size=10GB   --image-family ubuntu-1604-lts   --image-project=ubuntu-os-cloud   --machine-type=g1-small   --tags puma-server   --restart-on-failure  --metadata-from-file startup-script=startupscript.sh
+```
+создал тестовую машину с автоматически выполняемым скриптом startupscript.sh после создания. Скрипт постарался сделать идемпотентным ( повторное применение не должно повторять всех действий :) )
+
+Получились следующие данные для проверки:
+
+```
+testapp_IP = 35.246.237.88
+testapp_port = 9292
+```
+ - Просто добавил deploy.sh, install_mongodb.sh и install_ruby.sh.
+
+## Как запустить проект:
+ - Запуск не требуется
+
+## Как проверить работоспособность:
+ - В канале #anton_voskresenskij присутствуют сообщения о успешных билдах
+
+## PR checklist
+ - [ ] Pull request Label set to GCP and cloud-testapp
+<br>
+
+<details>
+<summary>ДЗ №2:</summary>
+<p align="justify">
+
 # Выполнено ДЗ №2
 
  - [ ] main task
@@ -17,6 +56,12 @@
  - [ ] Pull request Label set to play-travis
 
 <br>
+</p>
+</details>  
+
+<details>
+<summary>ДЗ №3:</summary>
+<p align="justify">
 
 # Выполнено ДЗ №3
 
@@ -59,3 +104,7 @@ Host someinternalhost
 
 ## PR checklist
  - [ ] Pull request Label set to cloud-bastion
+<br>
+
+</p>
+</details>  
