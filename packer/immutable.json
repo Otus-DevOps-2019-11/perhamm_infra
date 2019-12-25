@@ -16,7 +16,7 @@
             "type": "googlecompute",
             "project_id": "{{user `project_id`}}",
             "image_name": "reddit-base-{{timestamp}}",
-            "image_family": "reddit-base",
+            "image_family": "reddit-full",
             "source_image_family": "{{user `source_image`}}",
             "zone": "{{user `zone`}}",
             "ssh_username": "appuser",
@@ -26,12 +26,7 @@
     "provisioners": [
         {
             "type": "shell",
-            "script": "scripts/install_ruby.sh",
-            "execute_command": "sudo {{.Path}}"
-        },
-        {
-            "type": "shell",
-            "script": "scripts/install_mongodb.sh",
+            "script": "files/startupscript.sh",
             "execute_command": "sudo {{.Path}}"
         }
     ]
