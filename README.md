@@ -1,15 +1,133 @@
+# Выполнено ДЗ №5
+
+ - [ ] main task - Создать и параметризировать с некоторыми обязательными параметрами шаблон Packer для создания образа VM с предустановленными ruby и mongodb.
+ - [ ] additional tasks (*) - Создать bake образ VM при разворачивании которого на выходе получается сразу рабочее приложение.
+ - [ ] additional tasks (*) - Сделать запуск VM через gcloud.
+
+## В процессе сделано:
+ - Сделан шаблон ubuntu16.json с указанием, что переменные ```project_id``` и  ```source_image``` являются обязательными. Переменные задаются в файлике variables.json. Также в шаблоне указаны скрипты, проводящие установку ruby и mongodb. Собран образ коммандой
+```
+packer build -var-file=variables.json ubuntu16.json
+```
+В результате получился образ reddit-base-1577267109
+ - Для выполнения задания со * Сделан скрипт setupscript.sh и шаблон immutable.json. Скрипт setupscript.sh устанваливает ruby , mongodb и инсталирует приложение, а также добавляет systemd unit для приложения. Образ собирается коммандой
+```
+packer build -var-file=variables.json immutable.json
+```
+В результате получился образ reddit-full-1577267660
+ - Добавил комманду запуска приложения с помощью gcloud в create-reddit-vm.sh
+```
+gcloud compute instances create reddit-app --zone=europe-west3-a --machine-type=f1-micro --tags=puma-server --image=reddit-full-1577267660 --image-project=infra-262405 --restart-on-failure
+```
+
+## Как запустить проект:
+ - Запуск не требуется
+
+## Как проверить работоспособность:
+ - В канале #anton_voskresenskij присутствуют сообщения о успешных билдах
+
+## PR checklist
+ - [ ] Pull request Label set to packer-base and Packer
+<br>
+
+
+
+
+
+<details>
+<summary>ДЗ №2 (Локальное окружение инженера. ChatOps и визуализация рабочих процессов. Командная работа с Git. Работа в GitHub.):</summary>
+<p align="justify">
+
+# Выполнено ДЗ №2
+
+ - [ ] main task
+
+## В процессе сделано:
+ - Добавлен хук pre-commit
+ - Добавлен шаблон для последующих PR в GitHub
+ - Репозиторий подключен к тестам в Travis
+
+## Как запустить проект:
+ - Запуск не требуется
+
+## Как проверить работоспособность:
+ - В канале #anton_voskresenskij присутствуют сообщения о успешных билдах
+
+## PR checklist
+ - [ ] Pull request Label set to play-travis
+
+<br>
+</p>
+</details>
+
+<details>
+<summary>ДЗ №3 (Знакомство с облачной инфраструктурой и облачными сервисами.):</summary>
+<p align="justify">
+
+# Выполнено ДЗ №3
+
+ - [ ] main task - подключение через бастион хост, добавление setupvpn.sh и cloud-bastion.ovpn в ветку cloud-bastion, в README.md указать ip
+ - [ ] additional tasks - предложить решения по подключению к внутренней машине через бастион-хост в 1 строчку, предложить решения для подклчюения по алиасу, добавить сертификат Let's Encrypt
+
+## В процессе сделано:
+ - Создал виртуальные машины bastion и someinternalhost в регионе europe-west3-c. Получившиеся ip
+```
+bastion_IP = 35.207.115.233
+someinternalhost_IP = 10.156.0.3
+```
+ - Установлен и настроен VPN-сервер Pritunl
+ - По поводу подключения в одну строчку с рабочей машины - делаем вот так (предварительно нужно выполнить ```ssh-add ~/.ssh/appuser```):
+ ```
+ ssh -i ~/.ssh/appuser -t -A appuser@35.207.115.233 ssh 10.156.0.3
+ ```
+ - Вариант для подключения в виде ```ssh someinternalhost``` - делаем файлик .ssh/config со следующим содержимым:
+ ```
+ fyvaoldg@fyvaoldg-ProLiant-BL460c-Gen9:~$ cat .ssh/config
+Host someinternalhost
+        HostName 35.207.115.233
+        Port 22
+        User appuser
+        IdentityFile /home/fyvaoldg/.ssh/appuser
+        RequestTTY force
+        RemoteCommand ssh 10.156.0.3
+        ForwardAgent yes
+ ```
+ После чего становится возможным подключение напрямую коммандой ```ssh someinternalhost```
+
+ - Добавил сертификат автоматически через кнопку Settings в панели управления Pritunl, указав адрес 35-207-115-233.sslip.io
+ - Добавил ветку cloud-bastion и требуемые файлики соглсно методичке
+
+## Как запустить проект:
+ - Запуск не требуется
+
+## Как проверить работоспособность:
+ - В канале #anton_voskresenskij присутствуют сообщения о успешных билдах
+
+## PR checklist
+ - [ ] Pull request Label set to cloud-bastion
+<br>
+
+</p>
+</details>
+
+
+
+<details>
+<summary>ДЗ №4 (Основные сервисы Google Cloud Platform (GCP)):</summary>
+<p align="justify">
+
 # Выполнено ДЗ №4
 
  - [ ] main task - Задеплоить тестовое приложение,запустить и проверить его работу.
- - [ ] additional tasks - Написать скрипты deploy.sh, install_mongodb.sh и install_ruby.sh. Написать startup script который будет запускаться при создании инстанса и полностью деплоить и запускать приложение. Добавить правило файрвола через gcloud. 
+ - [ ] additional tasks - Написать скрипты deploy.sh, install_mongodb.sh и install_ruby.sh. Написать startup script который будет запускаться при создании инстанса и полностью деплоить и запускать приложение. Добавить правило файрвола через gcloud.
 
 ## В процессе сделано:
- - Коммандой 
+ - Коммандой
 ```
 gcloud compute firewall-rules create default-puma-server  --allow tcp:9292 --target-tags=puma-server --source-ranges=0.0.0.0/0
 ```
 добавил правило файрволла для нашего тестовго приложения.
- - Коммандой 
+ - Коммандой
 ```
 gcloud compute instances create reddit-app  --boot-disk-size=10GB   --image-family ubuntu-1604-lts   --image-project=ubuntu-os-cloud   --machine-type=g1-small   --tags puma-server   --restart-on-failure  --metadata-from-file startup-script=startupscript.sh
 ```
@@ -33,78 +151,5 @@ testapp_port = 9292
  - [ ] Pull request Label set to GCP and cloud-testapp
 <br>
 
-<details>
-<summary>ДЗ №2:</summary>
-<p align="justify">
-
-# Выполнено ДЗ №2
-
- - [ ] main task
-
-## В процессе сделано:
- - Добавлен хук pre-commit
- - Добавлен шаблон для последующих PR в GitHub
- - Репозиторий подключен к тестам в Travis
-
-## Как запустить проект:
- - Запуск не требуется
-
-## Как проверить работоспособность:
- - В канале #anton_voskresenskij присутствуют сообщения о успешных билдах
-
-## PR checklist
- - [ ] Pull request Label set to play-travis
-
-<br>
 </p>
-</details>  
-
-<details>
-<summary>ДЗ №3:</summary>
-<p align="justify">
-
-# Выполнено ДЗ №3
-
- - [ ] main task - подключение через бастион хост, добавление setupvpn.sh и cloud-bastion.ovpn в ветку cloud-bastion, в README.md указать ip
- - [ ] additional tasks - предложить решения по подключению к внутренней машине через бастион-хост в 1 строчку, предложить решения для подклчюения по алиасу, добавить сертификат Let's Encrypt
-
-## В процессе сделано:
- - Создал виртуальные машины bastion и someinternalhost в регионе europe-west3-c. Получившиеся ip
-```
-bastion_IP = 35.207.115.233
-someinternalhost_IP = 10.156.0.3
-```
- - Установлен и настроен VPN-сервер Pritunl
- - По поводу подключения в одну строчку с рабочей машины - делаем вот так (предварительно нужно выполнить ```ssh-add ~/.ssh/appuser```):
- ```
- ssh -i ~/.ssh/appuser -t -A appuser@35.207.115.233 ssh 10.156.0.3
- ```
- - Вариант для подключения в виде ```ssh someinternalhost``` - делаем файлик .ssh/config со следующим содержимым:
- ```
- fyvaoldg@fyvaoldg-ProLiant-BL460c-Gen9:~$ cat .ssh/config 
-Host someinternalhost
-        HostName 35.207.115.233
-        Port 22
-        User appuser
-        IdentityFile /home/fyvaoldg/.ssh/appuser
-        RequestTTY force
-        RemoteCommand ssh 10.156.0.3
-        ForwardAgent yes
- ```
- После чего становится возможным подключение напрямую коммандой ```ssh someinternalhost```
- 
- - Добавил сертификат автоматически через кнопку Settings в панели управления Pritunl, указав адрес 35-207-115-233.sslip.io
- - Добавил ветку cloud-bastion и требуемые файлики соглсно методичке
-
-## Как запустить проект:
- - Запуск не требуется
-
-## Как проверить работоспособность:
- - В канале #anton_voskresenskij присутствуют сообщения о успешных билдах
-
-## PR checklist
- - [ ] Pull request Label set to cloud-bastion
-<br>
-
-</p>
-</details>  
+</details>
