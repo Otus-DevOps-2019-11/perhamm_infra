@@ -3,19 +3,19 @@
         "project_id": "",
         "source_image": "",
         "machine_type": "f1-micro",
-	"zone": "europe-west3-a",
-	"image_description": "Simple web app",
-	"disk_size": "10GB",
-	"disk_type": "pd-standard",
-	"network": "default",
-	"tags": "puma-server"
+        "zone": "europe-west3-a",
+        "image_description": "Simple web app",
+        "disk_size": "10GB",
+        "disk_type": "pd-standard",
+        "network": "default",
+        "tags": "puma-server"
     },
 
     "builders": [
         {
             "type": "googlecompute",
             "project_id": "{{user `project_id`}}",
-            "image_name": "reddit-base-{{timestamp}}",
+            "image_name": "reddit-full-{{timestamp}}",
             "image_family": "reddit-full",
             "source_image_family": "{{user `source_image`}}",
             "zone": "{{user `zone`}}",
@@ -26,7 +26,7 @@
     "provisioners": [
         {
             "type": "shell",
-            "script": "files/startupscript.sh",
+            "script": "files/setupscript.sh",
             "execute_command": "sudo {{.Path}}"
         }
     ]

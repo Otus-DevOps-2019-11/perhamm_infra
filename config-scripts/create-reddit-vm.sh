@@ -1,1 +1,2 @@
-gcloud compute instances create reddit-app  --boot-disk-size=10GB   --image-family ubuntu-1604-lts   --image-project=ubuntu-os-cloud   --machine-type=g1-small   --tags puma-server   --restart-on-failure  --metadata-from-file startup-script=startupscript.sh
+#!/bin/bash
+gcloud compute instances create reddit-app --zone=europe-west3-a --machine-type=f1-micro --tags=puma-server --image=reddit-full-1577267660 --image-project=infra-262405 --restart-on-failure
