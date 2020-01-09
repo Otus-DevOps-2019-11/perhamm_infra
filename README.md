@@ -16,6 +16,7 @@ resource "google_compute_project_metadata_item" "ssh-keys" {
 ```
 В результате ключи добавляются в метаданные проекта. При добавлении ключей через веб-интерфейс, при повторном применении кода терраформ, все, что было добавлено через web - сотрется
  - Для выполнения задания с ** частично пришлось переписать main.tf для поддержки count, а также в lb.tf добавлены: внешний ip, группа инстансов google_compute_instance_group (```instances = [for i in google_compute_instance.app.*.self_link : i]```), google_compute_health_check, google_compute_backend_service, url_map и google_compute_target_http_proxy с google_compute_global_forwarding_rule. В результате получаем простой http балансировщик. Отключение сервисов на одной из vm не приводит к остановке сервиса. Само приложение доступно по 80 порту на адресе балансировщика. Немного скриншотов:
+ 
 ![Image 1](https://github.com/Otus-DevOps-2019-11/perhamm_infra/blob/terraform-1/screenshots/terraform1/1.PNG)
 ![Image 2](https://github.com/Otus-DevOps-2019-11/perhamm_infra/blob/terraform-1/screenshots/terraform1/2.PNG)
 ![Image 3](https://github.com/Otus-DevOps-2019-11/perhamm_infra/blob/terraform-1/screenshots/terraform1/3.PNG)
@@ -23,7 +24,9 @@ resource "google_compute_project_metadata_item" "ssh-keys" {
 ![Image 5](https://github.com/Otus-DevOps-2019-11/perhamm_infra/blob/terraform-1/screenshots/terraform1/5.PNG)
 ![Image 6](https://github.com/Otus-DevOps-2019-11/perhamm_infra/blob/terraform-1/screenshots/terraform1/6.PNG)
 ![Image 7](https://github.com/Otus-DevOps-2019-11/perhamm_infra/blob/terraform-1/screenshots/terraform1/7.PNG)
+
 <br>
+
 ## Как запустить проект:
  - Запуск не требуется
 
