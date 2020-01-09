@@ -1,24 +1,22 @@
-# Выполнено ДЗ №5
+# Выполнено ДЗ №6 (Знакомство с Terraform)
 
- - [ ] main task - Создать и параметризировать с некоторыми обязательными параметрами шаблон Packer для создания образа VM с предустановленными ruby и mongodb.
- - [ ] additional tasks (*) - Создать bake образ VM при разворачивании которого на выходе получается сразу рабочее приложение.
- - [ ] additional tasks (*) - Сделать запуск VM через gcloud.
+ - [ ] main task - С помощью терраформ развернуть VM из ранее собранного образа reddit-base. Выполнить следующие условия: есть input переменная для приватного ключа, есть input переменная для задания зоны в ресурсе"google_compute_instance", есть terraform.tfvars.example.
+ - [ ] additional tasks (*) - В коде терраформа добавить ssh ключи для нескольких пользователей в метаданные проекта.
+ - [ ] additional tasks (**) - В коде терраформа добавить балансировщик с проверкой бэкэндов, количество бэкендов должно задаваться через переменную count.
 
 ## В процессе сделано:
- - Сделан шаблон ubuntu16.json с указанием, что переменные ```project_id``` и  ```source_image``` являются обязательными. Переменные задаются в файлике variables.json. Также в шаблоне указаны скрипты, проводящие установку ruby и mongodb. Собран образ коммандой
+ - Для выполнения основного здания описан код в main.tf, добавлены описания переменных в variables.tf, terraform.tfvars заданы значения переменных, добавлен вывод в outputs.tf
+ - Для выполнения задания со * добавлен следующий кусок кода в main.tf, определены и заданы соответствующие перменные
 ```
-packer build -var-file=variables.json ubuntu16.json
+// Adding SSH Public Key in Project Meta Data
+resource "google_compute_project_metadata_item" "ssh-keys" {
+  key   = "ssh-keys"
+  value = "appuser1:${file(var.public_key_path1)} \nappuser2:${file(var.public_key_path2)} \nappuser3:${file(var.public_key_path3)}"
+}
 ```
-В результате получился образ reddit-base-1577267109
- - Для выполнения задания со * Сделан скрипт setupscript.sh и шаблон immutable.json. Скрипт setupscript.sh устанваливает ruby , mongodb и инсталирует приложение, а также добавляет systemd unit для приложения. Образ собирается коммандой
-```
-packer build -var-file=variables.json immutable.json
-```
-В результате получился образ reddit-full-1577267660
- - Добавил комманду запуска приложения с помощью gcloud в create-reddit-vm.sh
-```
-gcloud compute instances create reddit-app --zone=europe-west3-a --machine-type=f1-micro --tags=puma-server --image=reddit-full-1577267660 --image-project=infra-262405 --restart-on-failure
-```
+В результате ключи добавляются в метаданные проекта. При добавлении ключей через веб-интерфейс, при повторном применении кода терраформ, все, что было добавлено через web - сотрется
+ - Для выполнения задания с ** частично пришлось переписать main.tf для поддержки count, а также в lb.tf добавлены: внешний ip, группа инстансов google_compute_instance_group (```instances = [for i in google_compute_instance.app.*.self_link : i]```), google_compute_health_check, google_compute_backend_service, url_map и google_compute_target_http_proxy с google_compute_global_forwarding_rule. В результате получаем простой http балансировщик. Отключение сервисов на одной из vm не приводит к остановке сервиса. Само приложение доступно по 80 порту на адресе балансировщика. Немного скриншотов:
+
 
 ## Как запустить проект:
  - Запуск не требуется
@@ -27,12 +25,14 @@ gcloud compute instances create reddit-app --zone=europe-west3-a --machine-type=
  - В канале #anton_voskresenskij присутствуют сообщения о успешных билдах
 
 ## PR checklist
- - [ ] Pull request Label set to packer-base and Packer
+ - [ ] Pull request Label set to terraform and terraform-1
 <br>
 
-
-
-
+---
+---
+---
+---
+---
 
 <details>
 <summary>ДЗ №2 (Локальное окружение инженера. ChatOps и визуализация рабочих процессов. Командная работа с Git. Работа в GitHub.):</summary>
@@ -149,6 +149,49 @@ testapp_port = 9292
 
 ## PR checklist
  - [ ] Pull request Label set to GCP and cloud-testapp
+<br>
+
+</p>
+</details>
+
+
+<details>
+<summary>ДЗ №5 (Знакомство с облачной инфраструктурой и облачными сервисами.):</summary>
+<p align="justify">
+
+# Выполнено ДЗ №5
+
+ - [ ] main task - Создать и параметризировать с некоторыми обязательными параметрами шаблон Packer для создания образа VM с предустановленными ruby и mongodb.
+ - [ ] additional tasks (*) - Создать bake образ VM при разворачивании которого на выходе получается сразу рабочее приложение.
+ - [ ] additional tasks (*) - Сделать запуск VM через gcloud.
+
+## В процессе сделано:
+ - Сделан шаблон ubuntu16.json с указанием, что переменные ```project_id``` и  ```source_image``` являются обязательными. Переменные задаются в файлике variables.json. Также в шаблоне указаны скрипты, проводящие установку ruby и mongodb. Собран образ коммандой
+```
+packer build -var-file=variables.json ubuntu16.json
+```
+В результате получился образ reddit-base-1577267109
+ - Для выполнения задания со * Сделан скрипт setupscript.sh и шаблон immutable.json. Скрипт setupscript.sh устанваливает ruby , mongodb и инсталирует приложение, а также добавляет systemd unit для приложения. Образ собирается коммандой
+```
+packer build -var-file=variables.json immutable.json
+```
+В результате получился образ reddit-full-1577267660
+ - Добавил комманду запуска приложения с помощью gcloud в create-reddit-vm.sh
+```
+gcloud compute instances create reddit-app --zone=europe-west3-a --machine-type=f1-micro --tags=puma-server --image=reddit-full-1577267660 --image-project=infra-262405 --restart-on-failure
+```
+
+## Как запустить проект:
+ - Запуск не требуется
+
+## Как проверить работоспособность:
+ - В канале #anton_voskresenskij присутствуют сообщения о успешных билдах
+
+## PR checklist
+ - [ ] Pull request Label set to packer-base and Packer
+<br>
+
+
 <br>
 
 </p>
