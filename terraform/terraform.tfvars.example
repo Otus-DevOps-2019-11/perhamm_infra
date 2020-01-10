@@ -1,0 +1,8 @@
+project          = "infra-262405"
+public_key_path  = "/root/.ssh/appuser.pub"
+disk_image       = "reddit-base"
+private_key_path = "/root/.ssh/appuser"
+public_key_path1 = "/root/.ssh/appuser1.pub"
+public_key_path2 = "/root/.ssh/appuser2.pub"
+public_key_path3 = "/root/.ssh/appuser3.pub"
+node_count       = "2"
